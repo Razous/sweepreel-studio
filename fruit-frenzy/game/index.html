@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Frenzy - Slot Engine Step 1</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        canvas {
+            border: 4px solid #444;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #f00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #d00;
+        }
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fruit Frenzy</h1>
+    <canvas id="slotCanvas" width="800" height="480"></canvas>
+    <div class="controls">
+        <button id="spinBtn">SPIN</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('slotCanvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+
+        const REEL_COUNT = 5;
+        const ROW_COUNT = 3;
+        const SYMBOL_SIZE = 150;
+        const REEL_WIDTH = 160;
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 480;
+
+        // Symbol placeholders (colors)
+        const SYMBOL_COLORS = [
+            '#FF0000', // Cherry
+            '#FFFF00', // Lemon
+            '#FFA500', // Orange
+            '#800080', // Plum
+            '#008000', // Watermelon
+            '#FFD700', // Bell
+            '#0000FF', // Sevens
+            '#C0C0C0'  // BAR
+        ];
+
+        // Reel state
+        let reels = [];
+        let reelOffsets = [0, 0, 0, 0, 0];
+        let isSpinning = false;
+        let spinSpeed = [0, 0, 0, 0, 0];
+        let stopTarget = [0, 0, 0, 0, 0];
+
+        function initReels() {
+            for (let i = 0; i < REEL_COUNT; i++) {
+                let reelSymbols = [];
+                for (let j = 0; j < 20; j++) { // Virtual strip
+                    reelSymbols.push(Math.floor(Math.random() * SYMBOL_COLORS.length));
+                }
+                reels.push(reelSymbols);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            for (let r = 0; i < REEL_COUNT; r++) {
+                // Not using 'i' because it might conflict if not careful, but 'r' is fine
+            }
+            // Let's rewrite the loop correctly
+        }
+
+        // Corrected drawing logic
+        function render() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            for (let i = 0; i < REEL_COUNT; i++) {
+                const x = i * REEL_WIDTH;
+                const offset = reelOffsets[i];
+                const strip = reels[i];
+
+                for (let j = -1; j <= ROW_COUNT; j++) {
+                    const symbolIdx = (Math.floor(offset / SYMBOL_SIZE) + j) % strip.length;
+                    const normalizedIdx = symbolIdx < 0 ? strip.length + symbolIdx : symbolIdx;
+                    const color = SYMBOL_COLORS[strip[normalizedIdx]];
+                    
+                    const y = (j * SYMBOL_SIZE) + (offset % SYMBOL_SIZE);
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x + 10, y + 10, REEL_WIDTH - 20, SYMBOL_SIZE - 20);
+                    
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x + 10, y + 10, REEL_WIDTH - 20, SYMBOL_SIZE - 20);
+
+                    // Add simple label
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('SYM ' + strip[normalizedIdx], x + REEL_WIDTH/2, y + SYMBOL_SIZE/2 + 5);
+                }
+
+                // Draw reel separators
+                ctx.strokeStyle = '#444';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x, 0, REEL_WIDTH, CANVAS_HEIGHT);
+            }
+
+            if (isSpinning) {
+                updateSpin();
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        function updateSpin() {
+            let allStopped = true;
+            for (let i = 0; i < REEL_COUNT; i++) {
+                reelOffsets[i] += spinSpeed[i];
+                
+                // Deceleration logic (simple)
+                if (spinSpeed[i] > 0) {
+                    allStopped = false;
+                    // In a real game, we'd wait for a stop signal
+                }
+            }
+
+            // Simple timer-based stop for Step 1
+        }
+
+        // Let's make the spin simple: constant speed then stop after a few seconds
+        let spinTimers = [];
+
+        function startSpin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+
+            for (let i = 0; i < REEL_COUNT; i++) {
+                spinSpeed[i] = 20 + Math.random() * 10;
+                
+                // Staggered stop
+                setTimeout(() => {
+                    stopReel(i);
+                }, 2000 + i * 500);
+            }
+        }
+
+        function stopReel(i) {
+            const stopInterval = setInterval(() => {
+                spinSpeed[i] *= 0.9;
+                if (spinSpeed[i] < 1) {
+                    spinSpeed[i] = 0;
+                    // Snap to grid
+                    reelOffsets[i] = Math.round(reelOffsets[i] / SYMBOL_SIZE) * SYMBOL_SIZE;
+                    clearInterval(stopInterval);
+                    
+                    if (i === REEL_COUNT - 1) {
+                        isSpinning = false;
+                        spinBtn.disabled = false;
+                    }
+                }
+            }, 50);
+        }
+
+        spinBtn.addEventListener('click', startSpin);
+
+        initReels();
+        render();
+    </script>
+</body>
+</html>

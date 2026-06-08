@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruit Frenzy Slot</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="ui-layer">
+            <div id="balance-display">Balance: <span id="balance-amount">1000</span></div>
+            <div id="bet-controls">
+                <button id="bet-down">-</button>
+                <div id="bet-display">Bet: <span id="bet-amount">10</span></div>
+                <button id="bet-up">+</button>
+            </div>
+            <button id="spin-button">SPIN</button>
+        </div>
+    </div>
+    <script src="js/symbols.js"></script>
+    <script src="js/paylines.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
