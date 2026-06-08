@@ -82,8 +82,5 @@ export const spin = (req: Request, res: Response) => {
   const reelState = slotService.getRandomReelState();
   const winResult = slotService.calculateWins(reelState, bet / 20, multiplier);
 
-  res.json({
-    reelState,
-    ...winResult
-  });
+  res.json(winResult);
 };
